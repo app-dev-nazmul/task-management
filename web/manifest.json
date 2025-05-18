@@ -1,6 +1,6 @@
 {
-    "name": "electrical_tools",
-    "short_name": "electrical_tools",
+    "name": "hifz-pro",
+    "short_name": "hifz-pro",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

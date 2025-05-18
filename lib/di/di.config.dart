@@ -10,16 +10,14 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:dio/dio.dart' as _i361;
-import 'package:electrical_tools/core/service/api_service.dart' as _i987;
-import 'package:electrical_tools/core/service/api_service_impl.dart' as _i712;
-import 'package:electrical_tools/core/service/shared_prefs_service.dart'
-    as _i591;
-import 'package:electrical_tools/data/repository_impl/user_repository_impl.dart'
-    as _i1016;
-import 'package:electrical_tools/di/register_module.dart' as _i361;
-import 'package:electrical_tools/domain/repositories/user_repository.dart'
-    as _i1053;
 import 'package:get_it/get_it.dart' as _i174;
+import 'package:hifzpro/core/service/api_service.dart' as _i561;
+import 'package:hifzpro/core/service/api_service_impl.dart' as _i433;
+import 'package:hifzpro/core/service/shared_prefs_service.dart' as _i750;
+import 'package:hifzpro/data/repository_impl/user_repository_impl.dart'
+    as _i323;
+import 'package:hifzpro/di/register_module.dart' as _i887;
+import 'package:hifzpro/domain/repositories/user_repository.dart' as _i938;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
@@ -36,17 +34,17 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
-    gh.lazySingleton<_i987.ApiService>(
-      () => _i712.ApiServiceImpl(gh<_i361.Dio>()),
+    gh.lazySingleton<_i561.ApiService>(
+      () => _i433.ApiServiceImpl(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i591.SharedPrefsService>(
-      () => _i591.SharedPrefsServiceImpl(gh<_i460.SharedPreferences>()),
+    gh.lazySingleton<_i750.SharedPrefsService>(
+      () => _i750.SharedPrefsServiceImpl(gh<_i460.SharedPreferences>()),
     );
-    gh.lazySingleton<_i1053.UserRepository>(
-      () => _i1016.UserRepositoryImpl(gh<_i591.SharedPrefsService>()),
+    gh.lazySingleton<_i938.UserRepository>(
+      () => _i323.UserRepositoryImpl(gh<_i750.SharedPrefsService>()),
     );
     return this;
   }
 }
 
-class _$RegisterModule extends _i361.RegisterModule {}
+class _$RegisterModule extends _i887.RegisterModule {}

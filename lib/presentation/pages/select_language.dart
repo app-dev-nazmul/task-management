@@ -1,9 +1,9 @@
 
-import 'package:electrical_tools/routes/app_router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../routes/app_router.dart';
 import '../../routes/app_routes.dart';
 import '../provider/language_provider.dart';
 

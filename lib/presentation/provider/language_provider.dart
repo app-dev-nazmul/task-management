@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:electrical_tools/presentation/controller/language_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hifzpro/presentation/controller/language_controller.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../di/di.dart';
 

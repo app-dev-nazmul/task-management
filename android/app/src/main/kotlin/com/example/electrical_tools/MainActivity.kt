@@ -1,4 +1,4 @@
-package com.example.electrical_tools
+package com.example.hifz-pro
 
 import io.flutter.embedding.android.FlutterActivity
 

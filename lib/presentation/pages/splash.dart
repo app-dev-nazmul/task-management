@@ -22,18 +22,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await Future.delayed(const Duration(seconds: 5)); // Optional splash delay
     final result = await ref.read(hasLanguageSelectedProvider.future);
 
-    if (mounted) {
-      if (result) {
-        AppRouter.router.go(AppRoutes.home);
-      } else {
-        AppRouter.router.go(AppRoutes.language);
-      }
-    }
+    // if (mounted) {
+    //   if (result) {
+    //     AppRouter.router.go(AppRoutes.home);
+    //   } else {
+    //     AppRouter.router.go(AppRoutes.language);
+    //   }
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return  Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: FlutterLogo(size: 100), // Customize with your brand
       ),

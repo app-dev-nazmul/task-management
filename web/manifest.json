@@ -1,6 +1,6 @@
 {
-    "name": "hifz-pro",
-    "short_name": "hifz-pro",
+    "name": "hifzpro",
+    "short_name": "hifzpro",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

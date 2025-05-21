@@ -29,6 +29,7 @@ dependencies:
   go_router: ^15.1.2
   retrofit: ^4.4.2
   shared_preferences: ^2.5.3
+  get: ^4.7.2
   flutter_localizations:
     sdk: flutter
 

@@ -1,4 +1,4 @@
-package com.example.hifz-pro
+package com.example.hifzpro
 
 import io.flutter.embedding.android.FlutterActivity
 

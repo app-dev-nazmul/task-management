@@ -7,7 +7,7 @@ import '../../domain/repositories/user_repository.dart';
 
 @LazySingleton(as: UserRepository)
 class UserRepositoryImpl implements UserRepository {
-  SharedPrefsService _sp;
+  final SharedPrefsService _sp;
 
   UserRepositoryImpl(this._sp);
 

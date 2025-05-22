@@ -1,4 +1,9 @@
 {
   "appName": "HifzPro: Quran Hifz & Test",
-  "greetings": "Welcome"
+  "greetings": "Welcome",
+  "@@locale": "en",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "bangla": "Bangla",
+  "indonesian": "Bahasa Indonesia"
 }

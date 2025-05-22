@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hifzpro/constants/supported_locales.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import '../di/di.dart';
-import '../presentation/controller/language_controller.dart';
+import '../l10n/app_localizations.dart';
 import '../presentation/provider/language_provider.dart';
 import '../routes/app_router.dart';
-import '../routes/app_routes.dart';
 import '../themes/app_theme.dart';
 import '../presentation/controller/theme_controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<Widget> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  return const ProviderScope(child: MyApp());  // Use ProviderScope here
+  return const ProviderScope(child: MyApp());
 }
 
 class MyApp extends ConsumerWidget {
@@ -38,7 +37,7 @@ class MyApp extends ConsumerWidget {
     );
 
     return MaterialApp.router(
-      title: 'Electrical Tools',
+      title: AppLocalizations.of(context)?.appName,
       debugShowCheckedModeBanner: false,
       theme: appThemeData[AppTheme.light],
       darkTheme: appThemeData[AppTheme.dark],
@@ -51,7 +50,7 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en'), Locale('bn'), Locale('id')],
+      supportedLocales: AppConstants.supportedLocales,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: ScrollConfiguration(
           behavior: const _GlobalScrollBehavior(),

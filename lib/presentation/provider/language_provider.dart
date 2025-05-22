@@ -5,16 +5,18 @@ import 'package:hifzpro/presentation/controller/language_controller.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../di/di.dart';
 
-final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return getIt<UserRepository>();
-});
+// Provide UserRepository using GetIt (registered via injectable)
+final userRepositoryProvider = Provider<UserRepository>(
+  (ref) => getIt<UserRepository>(),
+);
 
+// LanguageController uses the above provider — this is the clean way
 final languageControllerProvider =
-StateNotifierProvider<LanguageController, Locale>((ref) {
-  final userRepo = ref.watch(userRepositoryProvider);
-  return LanguageController(userRepo);
-});
+    StateNotifierProvider<LanguageController, Locale>(
+      (ref) => LanguageController(ref.watch(userRepositoryProvider)),
+    );
 
+// Checks if language is selected (used for onboarding flow)
 final hasLanguageSelectedProvider = FutureProvider<bool>((ref) async {
   final languageRepo = ref.watch(userRepositoryProvider);
   final lang = await languageRepo.getUserLanguage();

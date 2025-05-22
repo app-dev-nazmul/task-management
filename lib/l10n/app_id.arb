@@ -1,4 +1,9 @@
 {
   "appName": "HifzPro: Hafalan Quran",
-  "greetings": "apa"
+  "greetings": "apa",
+  "@@locale": "id",
+  "selectLanguage": "Pilih Bahasa",
+  "english": "Inggris",
+  "bangla": "Bengali",
+  "indonesian": "Bahasa Indonesia"
 }

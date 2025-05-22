@@ -15,12 +15,12 @@ final appThemeData = {
     primaryTextTheme: GoogleFonts.nunitoTextTheme(),
     cupertinoOverrideTheme: _cupertinoOverrideTheme,
     scaffoldBackgroundColor: klPageBackgroundColor,
-    dialogTheme: _dialogThemeData,
+    // dialogTheme: _dialogThemeData,
     shadowColor: klPrimaryColor.withValues(alpha: 0.25),
     dividerTheme: _dividerThemeData,
     textTheme: GoogleFonts.nunitoTextTheme(),
     textButtonTheme: _textButtonTheme,
-    tabBarTheme: _tabBarTheme,
+    // tabBarTheme: _tabBarTheme,
     highlightColor: Colors.transparent,
     splashColor: Colors.transparent,
     radioTheme: const RadioThemeData(
@@ -40,22 +40,22 @@ final appThemeData = {
     brightness: Brightness.dark,
     primaryColor: kdPrimaryColor,
     scaffoldBackgroundColor: kdPageBackgroundColor,
-    dialogTheme: _dialogThemeData.copyWith(
-      backgroundColor: kdPageBackgroundColor,
-      surfaceTintColor: kdPageBackgroundColor,
-      titleTextStyle: _dialogThemeData.titleTextStyle?.copyWith(
-        color: kdPrimaryTextColor,
-      ),
-    ),
+    // dialogTheme: _dialogThemeData.copyWith(
+    //   backgroundColor: kdPageBackgroundColor,
+    //   surfaceTintColor: kdPageBackgroundColor,
+    //   titleTextStyle: _dialogThemeData.titleTextStyle?.copyWith(
+    //     color: kdPrimaryTextColor,
+    //   ),
+    // ),
     canvasColor: kdCanvasColor,
-    tabBarTheme: _tabBarTheme.copyWith(
-      unselectedLabelColor: Colors.grey[400],
-      labelColor: kdCanvasColor,
-      indicator: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: klPrimaryColor,
-      ),
-    ),
+    // tabBarTheme: _tabBarTheme.copyWith(
+    //   unselectedLabelColor: Colors.grey[400],
+    //   labelColor: kdCanvasColor,
+    //   indicator: BoxDecoration(
+    //     borderRadius: BorderRadius.circular(25),
+    //     color: klPrimaryColor,
+    //   ),
+    // ),
     textButtonTheme: _textButtonTheme,
     dividerTheme: _dividerThemeData,
     cupertinoOverrideTheme: _cupertinoOverrideTheme,

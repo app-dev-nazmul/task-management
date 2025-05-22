@@ -13,7 +13,7 @@ class ThemeController extends StateNotifier<AppTheme> {
     state = state == AppTheme.light ? AppTheme.dark : AppTheme.light;
   }
 }
-final themeControllerProvider =
-    StateNotifierProvider<ThemeController, AppTheme>((ref) {
-      return ThemeController();
-    });
+
+final themeControllerProvider = StateNotifierProvider<ThemeController, AppTheme>((ref){
+  return ThemeController();
+});

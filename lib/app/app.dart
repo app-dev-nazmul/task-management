@@ -6,6 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import '../di/di.dart';
 import '../l10n/app_localizations.dart';
 import '../presentation/provider/language_provider.dart';
+import '../presentation/provider/theme_provider.dart';
 import '../routes/app_router.dart';
 import '../themes/app_theme.dart';
 import '../presentation/controller/theme_controller.dart';
@@ -23,14 +24,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentTheme = ref.watch(themeControllerProvider);
+    // final isDarkMode = ref.watch(isDarkModeController);
+    final isDarkMode = ref.watch(isDarkModeController); // ✅ This now reflects stored value
+    print("jbbmkhhj $isDarkMode");
     final currentLocale = ref.watch(languageControllerProvider);
 
-
-    final isDarkMode = currentTheme == AppTheme.dark;
-
     final systemUiOverlayStyle =
-    isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+     isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
 
     SystemChrome.setSystemUIOverlayStyle(
       systemUiOverlayStyle.copyWith(statusBarColor: Colors.transparent),

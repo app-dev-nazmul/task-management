@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/repositories/user_repository.dart';
 import '../../themes/app_theme.dart';
 
 class ThemeController extends StateNotifier<AppTheme> {
-  ThemeController() : super(AppTheme.light);
+  final UserRepository _userRepository;
 
-  ThemeData get themeData => appThemeData[state]!;
+  ThemeController(this._userRepository) : super(AppTheme.light){
+    loadTheme();
+  }
 
-  bool get isDarkMode => state == AppTheme.dark;
+  Future<void> loadTheme() async {
+    final storedTheme = await _userRepository.getTheme();
+    if (storedTheme != null) {
+      state = storedTheme;
+    }
+  }
 
-  void toggleTheme() {
-    state = state == AppTheme.light ? AppTheme.dark : AppTheme.light;
+ Future <void> toggleTheme() async {
+    state =  state == AppTheme.light ? AppTheme.dark : AppTheme.light;
+    await _userRepository.setTheme(state);
   }
 }
-
-final themeControllerProvider = StateNotifierProvider<ThemeController, AppTheme>((ref){
-  return ThemeController();
-});

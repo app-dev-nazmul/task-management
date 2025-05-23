@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hifzpro/presentation/controller/theme_controller.dart';
+import 'package:hifzpro/presentation/provider/theme_provider.dart';
+import 'package:hifzpro/shared_ui_components/appbars/custom_appbar.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../l10n/app_localizations.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
+    final themeContorl = ref.watch(themeControllerProvider);
+
 
     bool isMobile = ResponsiveBreakpoints.of(context).isMobile;
     bool isTablet = ResponsiveBreakpoints.of(context).isTablet;
     bool isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.appName), // 👈 Localized App Name
+      appBar: CustomAppbar(
+        leading: Icon(Icons.grid_view_rounded),
+        title: localizations.appName.toString(),
+        actions: [IconButton(onPressed: () {
+          ref.read(themeControllerProvider.notifier).toggleTheme();
+        }, icon: Icon(Icons.light_mode))],
       ),
       body: Center(
         child: Padding(
@@ -27,7 +37,12 @@ class HomePage extends StatelessWidget {
               Text(
                 localizations.greetings, // 👈 Localized Greeting
                 style: TextStyle(
-                  fontSize: isMobile ? 20 : isTablet ? 28 : 36,
+                  fontSize:
+                      isMobile
+                          ? 20
+                          : isTablet
+                          ? 28
+                          : 36,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -35,17 +50,19 @@ class HomePage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 width: isMobile ? double.infinity : 500,
                 child: Text(
                   'This is a responsive card.\n\n'
-                      'Current device type: ${isMobile ? 'Mobile' : isTablet ? 'Tablet' : 'Desktop'}',
+                  'Current device type: ${isMobile
+                      ? 'Mobile'
+                      : isTablet
+                      ? 'Tablet'
+                      : 'Desktop'}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: isMobile ? 16 : 20,
-                    color: Colors.white,
                   ),
                 ),
               ),

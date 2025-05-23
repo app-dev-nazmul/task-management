@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/src/material/app_bar_theme.dart';
 import 'package:hifzpro/data/models/storage_key.dart';
+import 'package:hifzpro/themes/app_theme.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../core/service/shared_prefs_service.dart';
@@ -29,6 +31,32 @@ class UserRepositoryImpl implements UserRepository {
       await _sp.write(lang, StorageKey.language);
     } catch (e, stackTrace) {
       debugPrint('Error saving language: $e');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
+  @override
+  Future<AppTheme?> getTheme() async{
+    // TODO: implement getTheme
+   try{
+     print('sdljfsljfsf ');
+
+     final data = await _sp.read(StorageKey.theme);
+
+     return AppTheme.values.byName(data); // Throws if data is not 'light' or 'dark'
+
+
+   }catch(e){
+     return null;
+   }
+  }
+
+  @override
+  Future<void> setTheme(AppTheme theme) async {
+    // TODO: implement setTheme
+    try{
+      await _sp.write(theme.name,StorageKey.theme);
+    }catch(e,stackTrace){
       debugPrintStack(stackTrace: stackTrace);
     }
   }

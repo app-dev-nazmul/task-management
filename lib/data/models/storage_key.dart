@@ -1,3 +1,4 @@
 enum StorageKey {
-  language
+  language,
+  theme,
 }

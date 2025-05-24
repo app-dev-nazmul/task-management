@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hifzpro/constants/supported_locales.dart';
 import 'package:hifzpro/l10n/app_localizations.dart';
+import 'package:hifzpro/l10n/app_localizations_bn.dart';
 import '../../generated/assets.dart';
 import '../../routes/app_routes.dart';
 import '../../routes/app_router.dart';
@@ -14,22 +16,28 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  static const Duration _splashDelay = Duration(seconds: 2);
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_)=> _checkLanguage());
     _checkLanguage();
   }
 
   Future<void> _checkLanguage() async {
-    await Future.delayed(const Duration(seconds: 2)); // Optional splash delay
+    await Future.delayed(_splashDelay); // Optional splash delay
     final result = await ref.read(hasLanguageSelectedProvider.future);
-    if (mounted) {
+    if (!mounted) return;
       if (result) {
-        AppRouter.router.go(AppRoutes.home);
+        final locale = Localizations.localeOf(context);
+        if (locale.languageCode==AppConstants.defaultLanguageCode) {
+          AppRouter.router.go(AppRoutes.home);
+        } else {
+          AppRouter.router.go(AppRoutes.homeBn);
+        }
       } else {
         AppRouter.router.go(AppRoutes.language);
       }
-    }
   }
 
   @override

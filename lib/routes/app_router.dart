@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hifzpro/presentation/pages/home_bn.dart';
 import '../../presentation/pages/home.dart';
 import '../presentation/pages/select_language.dart';
 import '../presentation/pages/splash.dart';
@@ -18,6 +19,11 @@ class AppRouter {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.homeBn,
+        name: 'homeBn',
+        builder: (context, state) => const HomeBn(),
       ),
       GoRoute(
         path: AppRoutes.language,

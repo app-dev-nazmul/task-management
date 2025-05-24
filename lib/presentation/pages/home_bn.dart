@@ -3,18 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hifzpro/presentation/controller/theme_controller.dart';
 import 'package:hifzpro/presentation/provider/theme_provider.dart';
 import 'package:hifzpro/shared_ui_components/appbars/custom_appbar.dart';
-import 'package:hifzpro/shared_ui_components/drawer/custom_drawer.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../l10n/app_localizations.dart';
 
-class HomePage extends ConsumerWidget {
-  const HomePage({super.key});
+class HomeBn extends ConsumerWidget {
+  const HomeBn({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
-    final themeContorl = ref.watch(themeControllerProvider);
 
 
     bool isMobile = ResponsiveBreakpoints.of(context).isMobile;
@@ -23,12 +21,13 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppbar(
-        title: localizations.appName.toString(),
+        leading: Icon(Icons.grid_view_rounded),
+        // title: localizations.appName.toString(),
+        title: "Bangla",
         actions: [IconButton(onPressed: () {
           ref.read(themeControllerProvider.notifier).toggleTheme();
         }, icon: Icon(Icons.light_mode))],
       ),
-      drawer: CustomDrawer(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

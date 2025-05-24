@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/material/app_bar_theme.dart';
 import 'package:hifzpro/data/models/storage_key.dart';
 import 'package:hifzpro/themes/app_theme.dart';
 import 'package:injectable/injectable.dart';
@@ -18,7 +17,6 @@ class UserRepositoryImpl implements UserRepository {
     try {
       return await _sp.read(StorageKey.language); // can return null
     } catch (e, stackTrace) {
-      debugPrint('Error getting language: $e');
       debugPrintStack(stackTrace: stackTrace);
       return null;
     }
@@ -39,13 +37,8 @@ class UserRepositoryImpl implements UserRepository {
   Future<AppTheme?> getTheme() async{
     // TODO: implement getTheme
    try{
-     print('sdljfsljfsf ');
-
      final data = await _sp.read(StorageKey.theme);
-
-     return AppTheme.values.byName(data); // Throws if data is not 'light' or 'dark'
-
-
+     return AppTheme.values.byName(data);
    }catch(e){
      return null;
    }

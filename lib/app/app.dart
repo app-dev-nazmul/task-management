@@ -9,7 +9,6 @@ import '../presentation/provider/language_provider.dart';
 import '../presentation/provider/theme_provider.dart';
 import '../routes/app_router.dart';
 import '../themes/app_theme.dart';
-import '../presentation/controller/theme_controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<Widget> initializeApp() async {
@@ -24,13 +23,11 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final isDarkMode = ref.watch(isDarkModeController);
-    final isDarkMode = ref.watch(isDarkModeController); // ✅ This now reflects stored value
-    print("jbbmkhhj $isDarkMode");
+    final isDarkMode = ref.watch(isDarkModeController);
     final currentLocale = ref.watch(languageControllerProvider);
 
     final systemUiOverlayStyle =
-     isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+        isDarkMode ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
 
     SystemChrome.setSystemUIOverlayStyle(
       systemUiOverlayStyle.copyWith(statusBarColor: Colors.transparent),
@@ -51,18 +48,19 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppConstants.supportedLocales,
-      builder: (context, child) => ResponsiveBreakpoints.builder(
-        child: ScrollConfiguration(
-          behavior: const _GlobalScrollBehavior(),
-          child: child!,
-        ),
-        breakpoints: const [
-          Breakpoint(start: 0, end: 450, name: MOBILE),
-          Breakpoint(start: 451, end: 800, name: TABLET),
-          Breakpoint(start: 801, end: 1920, name: DESKTOP),
-          Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-        ],
-      ),
+      builder:
+          (context, child) => ResponsiveBreakpoints.builder(
+            child: ScrollConfiguration(
+              behavior: const _GlobalScrollBehavior(),
+              child: child!,
+            ),
+            breakpoints: const [
+              Breakpoint(start: 0, end: 450, name: MOBILE),
+              Breakpoint(start: 451, end: 800, name: TABLET),
+              Breakpoint(start: 801, end: 1920, name: DESKTOP),
+              Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+            ],
+          ),
     );
   }
 }

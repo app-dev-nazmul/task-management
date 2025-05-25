@@ -1,4 +1,4 @@
-# Customize Reuse demo
+# Task management demo for my assesment test
 
 A new Flutter project.
 
@@ -14,8 +14,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
-# my-flutter-reuse-demo
-# my-flutter-reuse-demo
 # technical_task-clean
 # technical_task-clean
 # task-management

@@ -1,4 +1,4 @@
-name: hifzpro
+name: technical_task
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -12,27 +12,21 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  freezed_annotation: ^3.0.0
 
   riverpod: ^2.6.1
   flutter_riverpod: ^2.6.1
   hooks_riverpod: ^2.6.1
 
-  json_serializable: ^6.9.5
-  json_annotation: ^4.9.0
   dio: ^5.8.0+1
-  hive: ^2.2.3
-  responsive_framework: ^1.5.1
   get_it: ^8.0.3
   injectable: ^2.5.0
   intl: ^0.20.2
   go_router: ^15.1.2
-  retrofit: ^4.4.2
-  shared_preferences: ^2.5.3
-  flutter_gen: ^5.10.0
   get: ^4.7.2
-  flutter_localizations:
-    sdk: flutter
+  floor: ^1.5.0
+  floor_generator: ^1.5.0
+  google_fonts: ^6.2.1
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
@@ -40,9 +34,15 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
   build_runner: ^2.4.15
-  freezed: ^3.0.6
-  injectable_generator: ^2.7.0
-  google_fonts: ^6.2.1
+  freezed: ^2.5.0
+  injectable_generator: ^2.6.2
+
+  json_serializable: ^6.9.0
+  json_annotation: ^4.9.0
+  flutter_screenutil: ^5.9.3
+
+  flutter_gen: ^5.10.0
+
 
 flutter:
   uses-material-design: true
@@ -50,4 +50,4 @@ flutter:
   assets:
     - assets/images/
 
-  generate: true
+generate: true

@@ -1,4 +1,4 @@
-package com.example.hifzpro
+package com.example.technical_task
 
 import io.flutter.embedding.android.FlutterActivity
 

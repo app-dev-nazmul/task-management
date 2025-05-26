@@ -1,6 +1,6 @@
 {
-    "name": "hifzpro",
-    "short_name": "hifzpro",
+    "name": "technical_task",
+    "short_name": "technical_task",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

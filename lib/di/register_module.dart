@@ -1,21 +1,21 @@
-
-import 'package:dio/dio.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart';
+
+import '../data/database/dao/task_dao.dart';
+import '../data/database/local_database.dart';
 
 @module
 abstract class RegisterModule {
-  @lazySingleton
-  Dio get dio => Dio(BaseOptions(
-    baseUrl: 'https://yourapi.com/api/',
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  ));
 
   @preResolve
-  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+  Future<LocalDatabase> get database async {
+    final path = join(await getDatabasesPath(), 'task_database.db');
+    return $FloorLocalDatabase.databaseBuilder(path).build();
+  }
 
+  @injectable
+  TaskDao taskDao(LocalDatabase db) {
+    return db.taskDao;
+  }
 }

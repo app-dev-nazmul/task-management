@@ -55,7 +55,7 @@ class AppConstants {
   // UI Constants
   static const int maxDescriptionLines = 5;
   static const int maxDescriptionLength = 200;
-  static const String dateFormat = 'MMMM dd, yyyy';
+  // static const String dateFormat = 'MMMM dd, yyyy';
   static const String emptyString = '';
   static const Color primaryButtonColor = Color(0xFF6C40F2);
 }

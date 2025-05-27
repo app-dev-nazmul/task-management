@@ -1,5 +1,4 @@
-// core/routes/app_routes.dart
 abstract class AppRoutes {
   static const home = '/home';
-  static const viewTask = '/home';
+  static const viewTask = '/viewTask';
 }

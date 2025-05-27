@@ -3,7 +3,7 @@ import '../../../domain/entities/task_entity.dart';
 
 @dao
 abstract class TaskDao {
-  @Query('SELECT * FROM TaskEntity')
+  @Query('SELECT * FROM tasks')
   Future<List<TaskEntity>> getAllTasks();
 
   @Query('SELECT * FROM TaskEntity WHERE id = :id')
@@ -19,7 +19,7 @@ abstract class TaskDao {
   @update
   Future<void> updateTask(TaskEntity task);
 
-  @delete
-  Future<void> deleteTask(TaskEntity task);
+  @Query('DELETE FROM tasks WHERE id = :id')
+  Future<void> deleteTaskById(String id);
 
 }

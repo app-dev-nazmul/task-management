@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:technical_task/constants/app_size.dart';
 import '../../constants/app_constants.dart';
-import '../../constants/dummy.dart';
 import '../../themes/colors.dart';
-
-class SummarySection extends StatelessWidget {
+import '../provider/task_provider.dart';
+class SummarySection extends ConsumerWidget {
   const SummarySection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final summaryData = DummyData.getTaskSummary();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final taskList = ref.watch(taskControllerProvider);
+    final completedTasksCount = taskList.where((task) => task.status == "completed").length;
+    final assignedTasksCount = taskList.where((task) => task.status == "todo").length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,7 +32,7 @@ class SummarySection extends StatelessWidget {
             _buildSummaryCard(
               context,
               title: AppConstants.assignedTasks,
-              count: summaryData['assignedTasks']!,
+              count: assignedTasksCount,
               color: AppColors.assignedTasksBg,
               borderColor: AppColors.assignedTaskBorderColor,
             ),
@@ -37,7 +40,7 @@ class SummarySection extends StatelessWidget {
             _buildSummaryCard(
               context,
               title: AppConstants.completedTasks,
-              count: summaryData['completedTasks']!,
+              count: completedTasksCount,
               color: AppColors.completedTasksBg,
               borderColor: AppColors.completedTasksBorderColor,
             ),
@@ -46,7 +49,6 @@ class SummarySection extends StatelessWidget {
       ],
     );
   }
-
   Widget _buildSummaryCard(
     BuildContext context, {
     required String title,
@@ -68,9 +70,7 @@ class SummarySection extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w500,fontSize: 14.sp),
             textAlign: TextAlign.left,
           ),
           SizedBox(height: 8.h),

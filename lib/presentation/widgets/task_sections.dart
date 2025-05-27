@@ -1,74 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:technical_task/routes/app_router.dart';
+import '../../../domain/entities/task_entity.dart';
+import '../../routes/app_routes.dart';
+import '../provider/task_provider.dart';
 
-class TaskSectionPage extends StatefulWidget {
+class TaskSectionPage extends ConsumerStatefulWidget {
   const TaskSectionPage({super.key});
 
   @override
-  State<TaskSectionPage> createState() => _TaskSectionPageState();
+  ConsumerState<TaskSectionPage> createState() => _TaskSectionPageState();
 }
 
-class _TaskSectionPageState extends State<TaskSectionPage> {
+class _TaskSectionPageState extends ConsumerState<TaskSectionPage> {
   int selectedTabIndex = 0;
-
-  // Dummy task data
-  final List<TaskModel> allTasks = [
-    TaskModel(
-      id: 1,
-      title: 'Homepage Redesign',
-      description:
-          'Redesign the homepage of our website to improve user engagement and align with our updated bra...',
-      date: 'October 15, 2023',
-      isCompleted: false,
-    ),
-    TaskModel(
-      id: 2,
-      title: 'E-commerce Checkout Process Redesign',
-      description:
-          'Redesign the checkout process for our e-commerce platform, focusing on improving conve...',
-      date: 'December 10, 2023',
-      isCompleted: true,
-    ),
-    TaskModel(
-      id: 3,
-      title: 'Mobile App Performance Optimization',
-      description:
-          'Optimize the performance of our mobile application to reduce loading times and improve user experience.',
-      date: 'November 8, 2023',
-      isCompleted: false,
-    ),
-    TaskModel(
-      id: 4,
-      title: 'API Documentation Update',
-      description:
-          'Update and improve our API documentation to make it more comprehensive and user-friendly for developers.',
-      date: 'October 25, 2023',
-      isCompleted: true,
-    ),
-    TaskModel(
-      id: 5,
-      title: 'User Authentication System',
-      description:
-          'Implement a secure user authentication system with multi-factor authentication support and OAuth integration.',
-      date: 'November 15, 2023',
-      isCompleted: false,
-    ),
-  ];
-
-  List<TaskModel> get filteredTasks {
-    if (selectedTabIndex == 0) {
-      return allTasks; // All tasks
-    } else {
-      return allTasks
-          .where((task) => task.isCompleted)
-          .toList(); // Completed tasks
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final taskList = ref.watch(taskControllerProvider);
+
+    final filteredTasks = selectedTabIndex == 0
+        ? taskList
+        : taskList.where((task) => task.status.toLowerCase() == 'completed').toList();
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
+    backgroundColor: Colors.transparent,
       body: Padding(
         padding: EdgeInsets.only(top: 8.h),
         child: Column(
@@ -79,8 +37,6 @@ class _TaskSectionPageState extends State<TaskSectionPage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 8.h),
-
-            // Tab Bar
             Container(
               height: 40.h,
               decoration: BoxDecoration(
@@ -88,7 +44,7 @@ class _TaskSectionPageState extends State<TaskSectionPage> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -188,14 +144,20 @@ class _TaskSectionPageState extends State<TaskSectionPage> {
                       )
                       : ListView.builder(
                         padding: EdgeInsets.only(top: 12.h),
-
-                        // Now this padding scrolls with the list
                         itemCount: filteredTasks.length,
                         itemBuilder: (context, index) {
                           final task = filteredTasks[index];
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: TaskCard(task: task),
+                            padding:  EdgeInsets.only(bottom: 16),
+                            child: GestureDetector(child: TaskCard(task: task),onTap: (){
+                              AppRouter.router.go(
+                                AppRoutes.viewTask,
+                                extra: {
+                                  'task': task,
+                                  'isEditMode': true,
+                                },
+                              );
+                            },),
                           );
                         },
                       ),
@@ -208,7 +170,7 @@ class _TaskSectionPageState extends State<TaskSectionPage> {
 }
 
 class TaskCard extends StatelessWidget {
-  final TaskModel task;
+  final TaskEntity task;
 
   const TaskCard({super.key, required this.task});
 
@@ -253,12 +215,9 @@ class TaskCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 16),
-
-          // Bottom Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Date with icon
               Row(
                 children: [
                   const Icon(
@@ -268,7 +227,7 @@ class TaskCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    task.date,
+                    DateFormat('MMMM d, y').format(DateTime.parse(task.createdAt)),
                     style: const TextStyle(
                       fontSize: 14,
                       color: Color(0xFF8E8E93),
@@ -286,18 +245,18 @@ class TaskCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color:
-                      task.isCompleted
+                      task.status == "completed"
                           ? const Color(0xFFE6F7F1)
                           : const Color(0xFFE8E5FF),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  task.isCompleted ? 'Complete' : 'Todo',
+                  task.status == "completed" ? 'Complete' : 'Todo',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color:
-                        task.isCompleted
+                    task.status == "completed"
                             ? const Color(0xFF10B981)
                             : const Color(0xFF6366F1),
                   ),
@@ -309,21 +268,4 @@ class TaskCard extends StatelessWidget {
       ),
     );
   }
-}
-
-// Task Model
-class TaskModel {
-  final int id;
-  final String title;
-  final String description;
-  final String date;
-  final bool isCompleted;
-
-  TaskModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.isCompleted,
-  });
 }

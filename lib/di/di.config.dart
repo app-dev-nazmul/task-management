@@ -17,6 +17,7 @@ import 'package:technical_task/data/repository_impl/task_repository_impl.dart'
 import 'package:technical_task/di/register_module.dart' as _i730;
 import 'package:technical_task/domain/repositories/task_repository.dart'
     as _i736;
+import 'package:technical_task/domain/use_case/task_usecase.dart' as _i876;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -34,10 +35,23 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.database,
       preResolve: true,
     );
+    gh.lazySingleton<_i876.ValidateTaskUseCase>(
+        () => _i876.ValidateTaskUseCase());
     gh.factory<_i692.TaskDao>(
         () => registerModule.taskDao(gh<_i350.LocalDatabase>()));
+    gh.lazySingleton<_i876.TaskValidationResult>(
+        () => _i876.TaskValidationResult(
+              gh<bool>(),
+              gh<String>(),
+            ));
     gh.lazySingleton<_i736.TaskRepository>(
         () => _i705.TaskRepositoryImpl(gh<_i692.TaskDao>()));
+    gh.lazySingleton<_i876.CreateTaskUseCase>(
+        () => _i876.CreateTaskUseCase(gh<_i736.TaskRepository>()));
+    gh.lazySingleton<_i876.UpdateTaskUseCase>(
+        () => _i876.UpdateTaskUseCase(gh<_i736.TaskRepository>()));
+    gh.lazySingleton<_i876.DeleteTaskUseCase>(
+        () => _i876.DeleteTaskUseCase(gh<_i736.TaskRepository>()));
     return this;
   }
 }

@@ -15,7 +15,9 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<List<TaskEntity>> getAllTasks() async {
     try {
-      return await _taskDao.getAllTasks();
+      final data =  await _taskDao.getAllTasks();
+      return data;
+
     } catch (e) {
       throw Exception('Failed to get all tasks: $e');
     }
@@ -58,9 +60,9 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<void> deleteTask(TaskEntity task) async {
+  Future<void> deleteTask(String id) async {
     try {
-      await _taskDao.deleteTask(task);
+      await _taskDao.deleteTaskById(id);
     } catch (e) {
       throw Exception('Failed to delete task: $e');
     }

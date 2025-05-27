@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:technical_task/domain/entities/task_entity.dart';
+import 'package:technical_task/routes/app_router.dart';
+import 'package:technical_task/routes/app_routes.dart';
 
 import '../../constants/app_constants.dart';
+import '../../di/di.dart';
+import '../../domain/use_case/task_usecase.dart';
 import '../../generated/assets.dart';
 import '../../themes/colors.dart';
 import '../provider/task_provider.dart';
 
 class CreateTaskScreen extends ConsumerStatefulWidget {
-  const CreateTaskScreen({Key? key}) : super(key: key);
+  final TaskEntity? task;
+  final bool isEditMode;
+
+  const CreateTaskScreen({Key? key, this.task, required this.isEditMode})
+    : super(key: key);
 
   @override
   ConsumerState<CreateTaskScreen> createState() => _CreateTaskScreenState();
@@ -25,8 +34,19 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   @override
   void initState() {
     super.initState();
-    startDate = DateTime.now();
-    endDate = DateTime.now();
+    if (widget.isEditMode && widget.task != null) {
+      taskNameController.text = widget.task!.title;
+   taskDescController.text = widget.task!.description;
+
+      startDate = DateFormat("yyyy-MM-dd").parse(widget.task!.startDate); // ✅ fixed
+      endDate = DateFormat("yyyy-MM-dd").parse(widget.task!.endDate);
+    } else {
+      startDate = DateTime.now();
+      endDate = DateTime.now();
+    }
+    taskDescController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -39,9 +59,10 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: isStartDate
-          ? (startDate ?? DateTime.now())
-          : (endDate ?? DateTime.now()),
+      initialDate:
+          isStartDate
+              ? (startDate ?? DateTime.now())
+              : (endDate ?? DateTime.now()),
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
@@ -58,92 +79,126 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   String formatDate(DateTime? date) {
     return date != null
-        ? DateFormat(AppConstants.dateFormat).format(date)
+        ? DateFormat('yyyy-MM-dd').format(date)
         : AppConstants.emptyString;
   }
 
-  Future<void> _createTask() async {
-    if (!_validateInputs()) return;
+
+  Future<void> _createOrUpdateTask() async {
+    final validator = ValidateTaskUseCase();
+    final validation = validator(
+      title: taskNameController.text,
+      description: taskDescController.text,
+      startDate: startDate,
+      endDate: endDate,
+    );
+
+    if (!validation.isValid) {
+      _showErrorSnackBar(validation.message!);
+      return;
+    }
 
     setState(() => isLoading = true);
+    final controller = ref.read(taskControllerProvider.notifier);
 
     try {
-      await ref.read(taskControllerProvider.notifier).createTask(
-        title: taskNameController.text.trim(),
-        description: taskDescController.text.trim(),
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppConstants.taskCreatedSuccess)),
+      if (widget.isEditMode) {
+        final updatedTask = widget.task!.copyWith(
+          title: taskNameController.text.trim(),
+          description: taskDescController.text.trim(),
+          startDate: DateFormat('yyyy-MM-dd').format(startDate!),
+          endDate: DateFormat('yyyy-MM-dd').format(endDate!),
+          status: "completed",
         );
-        Navigator.of(context).pop();
+        await controller.updateTask(updatedTask);
+
+        if (!mounted) return;
+        _showSuccess('Task updated successfully');
+      } else {
+        await controller.createTask(
+          title: taskNameController.text.trim(),
+          description: taskDescController.text.trim(),
+          startDate: startDate!,
+          endDate: endDate!,
+          createdAt: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          status: 'todo',
+        );
+        if (!mounted) return;
+        _showSuccess(AppConstants.taskCreatedSuccess);
       }
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          AppRouter.router.go(AppRoutes.home);
+        }
+      });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      _showErrorSnackBar('Error: $e');
     } finally {
-      if (mounted) {
-        setState(() => isLoading = false);
-      }
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
-  bool _validateInputs() {
-    if (taskNameController.text.trim().isEmpty) {
-      _showErrorSnackBar(AppConstants.taskNameRequired);
-      return false;
-    }
-    if (taskDescController.text.trim().isEmpty) {
-      _showErrorSnackBar(AppConstants.taskDescriptionRequired);
-      return false;
-    }
-    if (taskDescController.text.length > AppConstants.maxDescriptionLength) {
-      _showErrorSnackBar(AppConstants.descriptionTooLong);
-      return false;
-    }
-    if (startDate == null || endDate == null) {
-      _showErrorSnackBar(AppConstants.datesRequired);
-      return false;
-    }
-    if (endDate!.isBefore(startDate!)) {
-      _showErrorSnackBar(AppConstants.invalidDateRange);
-      return false;
-    }
-    return true;
-  }
-
-  void _showErrorSnackBar(String message) {
+  void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.green,
       ),
     );
   }
 
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
+    final validateTaskUseCase = getIt<ValidateTaskUseCase>();
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading:
+            widget.isEditMode
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed:
+                      () => AppRouter.router.pushReplacement(AppRoutes.home),
+                )
+                : null,
         title: Text(
-          AppConstants.createTaskTitle,
-          style: TextStyle(fontSize: 16.sp),
+          widget.isEditMode ? 'View Task' : AppConstants.createTaskTitle,
+          style: TextStyle(fontSize: 16.sp, color: Colors.black),
         ),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        actions:
+            widget.isEditMode
+                ? [
+              SizedBox(
+                width: 59,
+                height: 29,
+                child: TextButton(
+                  onPressed: _deleteTask,
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.buttonBackgroundColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.r),
+                    ),
+                    padding: EdgeInsets.zero, // Avoid internal padding interfering with fixed size
+                  ),
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: AppColors.buttonDeleteColor, fontSize: 12.sp,fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),                  SizedBox(width: 12.w),
+                ]
+                : null,
       ),
       body: Container(
-        height: 466.h,
+        height: 500.h,
         padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -156,7 +211,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             SizedBox(height: 12.h),
             _buildTaskDescriptionField(),
             SizedBox(height: 8.h),
-            _buildCharacterCount(),
+            // _buildCharacterCount(),
             SizedBox(height: 12.h),
             _buildDateSelectionRow(),
             SizedBox(height: 32.h),
@@ -167,6 +222,38 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
     );
   }
 
+  Future<void> _deleteTask() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Deletion'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      final controller = ref.read(taskControllerProvider.notifier);
+      await controller.deleteTask(widget.task!.id);
+
+      if (!mounted) return;
+      _showSuccess("Delete Successfully");
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          AppRouter.router.go(AppRoutes.home);
+        }
+      });
+    }
+  }
   Widget _buildTaskNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,23 +290,20 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
         SizedBox(height: 10.h),
-        SizedBox(
-          height: 109.h,
-          child: TextField(
-            controller: taskDescController,
-            maxLines: AppConstants.maxDescriptionLines,
-            onChanged: (value) => setState(() {}), // Update character count
-            decoration: InputDecoration(
-              hintText: AppConstants.taskDescriptionHint,
-              hintStyle: TextStyle(
-                color: const Color(0xFF6E7591),
-                fontSize: 12.sp,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              counterText: AppConstants.emptyString, // Hide default counter
+        TextField(
+          controller: taskDescController,
+          maxLines: 5,
+          maxLength: AppConstants.maxDescriptionLength,
+          decoration: InputDecoration(
+            hintText: AppConstants.taskDescriptionHint,
+            hintStyle: TextStyle(
+              color: const Color(0xFF6E7591),
+              fontSize: 12.sp,
             ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            counter: _buildCharacterCount(),
           ),
         ),
       ],
@@ -231,26 +315,13 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
     final isValid = characterCount <= AppConstants.maxDescriptionLength;
 
     return Align(
-      alignment: Alignment.bottomRight,
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '$characterCount',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 10.sp,
-                color: isValid ? AppColors.primary : Colors.red,
-              ),
-            ),
-            TextSpan(
-              text: '/${AppConstants.maxDescriptionLength}',
-              style: TextStyle(
-                fontSize: 10.sp,
-                color: AppColors.disableTextColor,
-              ),
-            ),
-          ],
+      alignment: Alignment.centerRight,
+      child: Text(
+        '$characterCount/${AppConstants.maxDescriptionLength}',
+        style: TextStyle(
+          fontSize: 10.sp,
+          fontWeight: FontWeight.w600,
+          color: isValid ? Colors.black : Colors.red,
         ),
       ),
     );
@@ -274,7 +345,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isStartDate ? AppConstants.startDateLabel : AppConstants.endDateLabel,
+              isStartDate
+                  ? AppConstants.startDateLabel
+                  : AppConstants.endDateLabel,
               style: TextStyle(fontSize: 14.sp),
             ),
             SizedBox(height: 10.h),
@@ -323,11 +396,23 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   }
 
   Widget _buildCreateTaskButton() {
+    final isEditMode = widget.isEditMode;
+
     return SizedBox(
       height: 52.h,
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: isLoading ? null : _createTask,
+        onPressed:
+            isLoading
+                ? null
+                : () { _createOrUpdateTask();
+                  // if (isEditMode) {
+                  //   _createOrUpdateTask();
+                  // } else {
+                  //   // _createTask();
+                  //   _createOrUpdateTask();
+                  // }
+                },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppConstants.primaryButtonColor,
           padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -335,23 +420,26 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             borderRadius: BorderRadius.circular(30.r),
           ),
         ),
-        child: isLoading
-            ? SizedBox(
-          height: 20.h,
-          width: 20.w,
-          child: const CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2,
-          ),
-        )
-            : Text(
-          AppConstants.createTaskButtonText,
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child:
+            isLoading
+                ? SizedBox(
+                  height: 20.h,
+                  width: 20.w,
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+                : Text(
+                  isEditMode
+                      ? "Complete Task"
+                      : AppConstants.createTaskButtonText,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
       ),
     );
   }

@@ -11,7 +11,7 @@ class SummarySection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskControllerProvider);
     final completedTasksCount = taskList.where((task) => task.status == AppConstants.statusCompletedStor).length;
-    final assignedTasksCount = taskList.where((task) => task.status ==AppConstants.statusTodo ).length;
+    final assignedTasksCount = taskList.where((task) => task.status == AppConstants.statusTodoStore).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

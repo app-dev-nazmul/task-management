@@ -152,7 +152,6 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final validateTaskUseCase = getIt<ValidateTaskUseCase>();
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(

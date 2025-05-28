@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:technical_task/constants/app_size.dart';
 import '../../constants/app_constants.dart';
 import '../../themes/colors.dart';
 import '../provider/task_provider.dart';
@@ -11,8 +10,8 @@ class SummarySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskControllerProvider);
-    final completedTasksCount = taskList.where((task) => task.status == "completed").length;
-    final assignedTasksCount = taskList.where((task) => task.status == "todo").length;
+    final completedTasksCount = taskList.where((task) => task.status == AppConstants.statusCompletedStor).length;
+    final assignedTasksCount = taskList.where((task) => task.status ==AppConstants.statusTodo ).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +58,7 @@ class SummarySection extends ConsumerWidget {
     return Container(
       width: 163.5.w,
       height: 83.h,
-      padding: EdgeInsets.all(AppSizes.cardPadding.w),
+      padding: EdgeInsets.all(AppConstants.cardPadding.w),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(16.r),

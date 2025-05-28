@@ -18,7 +18,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812), // base size from your design (e.g. iPhone X)
+      designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -27,10 +27,6 @@ class MyApp extends ConsumerWidget {
           themeMode: ThemeMode.light,
           theme: appThemeData[AppTheme.light],
           routerConfig: AppRouter.router,
-          // builder: (context, child) => ScrollConfiguration(
-          //   behavior: const _GlobalScrollBehavior(),
-          //   child: child!,
-          // ),
           builder: (context, child) => ScrollConfiguration(
             behavior: const _GlobalScrollBehavior(),
             child: GradientBackgroundWrapper(

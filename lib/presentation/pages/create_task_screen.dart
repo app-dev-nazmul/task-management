@@ -17,8 +17,7 @@ class CreateTaskScreen extends ConsumerStatefulWidget {
   final TaskEntity? task;
   final bool isEditMode;
 
-  const CreateTaskScreen({Key? key, this.task, required this.isEditMode})
-    : super(key: key);
+  const CreateTaskScreen({super.key, this.task, required this.isEditMode});
 
   @override
   ConsumerState<CreateTaskScreen> createState() => _CreateTaskScreenState();
@@ -36,10 +35,12 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
     super.initState();
     if (widget.isEditMode && widget.task != null) {
       taskNameController.text = widget.task!.title;
-   taskDescController.text = widget.task!.description;
+      taskDescController.text = widget.task!.description;
 
-      startDate = DateFormat("yyyy-MM-dd").parse(widget.task!.startDate); // ✅ fixed
-      endDate = DateFormat("yyyy-MM-dd").parse(widget.task!.endDate);
+      startDate = DateFormat(
+        AppConstants.dateStyles,
+      ).parse(widget.task!.startDate);
+      endDate = DateFormat(AppConstants.dateStyles).parse(widget.task!.endDate);
     } else {
       startDate = DateTime.now();
       endDate = DateTime.now();
@@ -79,10 +80,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   String formatDate(DateTime? date) {
     return date != null
-        ? DateFormat('yyyy-MM-dd').format(date)
+        ? DateFormat(AppConstants.dateStyles).format(date)
         : AppConstants.emptyString;
   }
-
 
   Future<void> _createOrUpdateTask() async {
     final validator = ValidateTaskUseCase();
@@ -106,29 +106,29 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         final updatedTask = widget.task!.copyWith(
           title: taskNameController.text.trim(),
           description: taskDescController.text.trim(),
-          startDate: DateFormat('yyyy-MM-dd').format(startDate!),
-          endDate: DateFormat('yyyy-MM-dd').format(endDate!),
-          status: "completed",
+          startDate: DateFormat(AppConstants.dateStyles).format(startDate!),
+          endDate: DateFormat(AppConstants.dateStyles).format(endDate!),
+          status: AppConstants.statusCompletedStor,
         );
         await controller.updateTask(updatedTask);
 
         if (!mounted) return;
-        _showSuccess('Task updated successfully');
+        _showSuccess(AppConstants.taskUpdated);
       } else {
         await controller.createTask(
           title: taskNameController.text.trim(),
           description: taskDescController.text.trim(),
           startDate: startDate!,
           endDate: endDate!,
-          createdAt: DateFormat('yyyy-MM-dd').format(DateTime.now()),
-          status: 'todo',
+          createdAt: DateFormat(AppConstants.dateStyles).format(DateTime.now()),
+          status: AppConstants.statusTodoStore,
         );
         if (!mounted) return;
         _showSuccess(AppConstants.taskCreatedSuccess);
       }
       Future.delayed(const Duration(milliseconds: 800), () {
         if (mounted) {
-          AppRouter.router.go(AppRoutes.home);
+          AppRouter.router.push(AppRoutes.home);
         }
       });
     } catch (e) {
@@ -140,10 +140,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 
@@ -169,31 +166,40 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 )
                 : null,
         title: Text(
-          widget.isEditMode ? 'View Task' : AppConstants.createTaskTitle,
+          widget.isEditMode
+              ? AppConstants.viewTask
+              : AppConstants.createTaskTitle,
           style: TextStyle(fontSize: 16.sp, color: Colors.black),
         ),
         elevation: 0,
         actions:
             widget.isEditMode
                 ? [
-              SizedBox(
-                width: 59,
-                height: 29,
-                child: TextButton(
-                  onPressed: _deleteTask,
-                  style: TextButton.styleFrom(
-                    backgroundColor: AppColors.buttonBackgroundColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40.r),
+                  SizedBox(
+                    width: 59,
+                    height: 29,
+                    child: TextButton(
+                      onPressed: _deleteTask,
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.buttonBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40.r),
+                        ),
+                        padding:
+                            EdgeInsets
+                                .zero, // Avoid internal padding interfering with fixed size
+                      ),
+                      child: Text(
+                        AppConstants.delete,
+                        style: TextStyle(
+                          color: AppColors.buttonDeleteColor,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    padding: EdgeInsets.zero, // Avoid internal padding interfering with fixed size
                   ),
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(color: AppColors.buttonDeleteColor, fontSize: 12.sp,fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),                  SizedBox(width: 12.w),
+                  SizedBox(width: 12.w),
                 ]
                 : null,
       ),
@@ -225,20 +231,21 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   Future<void> _deleteTask() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Deletion'),
-        content: const Text('Are you sure you want to delete this task?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text(AppConstants.deleteConfirm),
+            content: const Text(AppConstants.areYouSureDelete),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text(AppConstants.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text(AppConstants.delete),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true && mounted) {
@@ -246,7 +253,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       await controller.deleteTask(widget.task!.id);
 
       if (!mounted) return;
-      _showSuccess("Delete Successfully");
+      _showSuccess(AppConstants.deleteSuccessfully);
       Future.delayed(const Duration(milliseconds: 800), () {
         if (mounted) {
           AppRouter.router.go(AppRoutes.home);
@@ -254,6 +261,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       });
     }
   }
+
   Widget _buildTaskNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,6 +275,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           controller: taskNameController,
           decoration: InputDecoration(
             hintText: AppConstants.taskNameHint,
+            hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.r),
               borderSide: BorderSide(color: Colors.grey, width: 2.0.w),
@@ -299,6 +308,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             hintStyle: TextStyle(
               color: const Color(0xFF6E7591),
               fontSize: 12.sp,
+              fontWeight: FontWeight.w400,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.r),
@@ -312,16 +322,30 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   Widget _buildCharacterCount() {
     final characterCount = taskDescController.text.length;
-    final isValid = characterCount <= AppConstants.maxDescriptionLength;
-
     return Align(
       alignment: Alignment.centerRight,
-      child: Text(
-        '$characterCount/${AppConstants.maxDescriptionLength}',
-        style: TextStyle(
-          fontSize: 10.sp,
-          fontWeight: FontWeight.w600,
-          color: isValid ? Colors.black : Colors.red,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: characterCount.toString(),
+              style: TextStyle(
+                color: const Color(0xFF613BE7),
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w600,
+                height: 1.40,
+              ),
+            ),
+            TextSpan(
+              text: "/${AppConstants.maxDescriptionLength}",
+              style: TextStyle(
+                color: const Color(0xFF6D7491),
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w400,
+                height: 1.40,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -405,7 +429,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         onPressed:
             isLoading
                 ? null
-                : () { _createOrUpdateTask();
+                : () {
+                  _createOrUpdateTask();
                   // if (isEditMode) {
                   //   _createOrUpdateTask();
                   // } else {
@@ -432,7 +457,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 )
                 : Text(
                   isEditMode
-                      ? "Complete Task"
+                      ? AppConstants.completedTasks
                       : AppConstants.createTaskButtonText,
                   style: TextStyle(
                     fontSize: 16.sp,

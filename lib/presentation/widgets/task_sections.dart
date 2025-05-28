@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:technical_task/constants/app_constants.dart';
 import 'package:technical_task/routes/app_router.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../routes/app_routes.dart';
@@ -33,7 +34,7 @@ class _TaskSectionPageState extends ConsumerState<TaskSectionPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Today tasks',
+              AppConstants.todayTask,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 8.h),
@@ -67,7 +68,7 @@ class _TaskSectionPageState extends ConsumerState<TaskSectionPage> {
                         ),
                         child: Center(
                           child: Text(
-                            'All tasks',
+                            AppConstants.allTask,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -96,12 +97,11 @@ class _TaskSectionPageState extends ConsumerState<TaskSectionPage> {
                         ),
                         child: Center(
                           child: Text(
-                            'Completed',
+                            AppConstants.statusCompleted,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color:
-                                  selectedTabIndex == 1
+                              color: selectedTabIndex == 1
                                       ? Colors.white
                                       : const Color(0xFF8E8E93),
                             ),
@@ -131,8 +131,8 @@ class _TaskSectionPageState extends ConsumerState<TaskSectionPage> {
                             const SizedBox(height: 16),
                             Text(
                               selectedTabIndex == 0
-                                  ? 'No tasks available'
-                                  : 'No completed tasks',
+                                  ? AppConstants.noTaskAvailable
+                                  : AppConstants.noCompletedTask,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -245,18 +245,18 @@ class TaskCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color:
-                      task.status == "completed"
+                      task.status == AppConstants.statusCompletedStor
                           ? const Color(0xFFE6F7F1)
                           : const Color(0xFFE8E5FF),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  task.status == "completed" ? 'Complete' : 'Todo',
+                  task.status == AppConstants.statusCompletedStor ? AppConstants.statusCompleted: AppConstants.statusTodoStore,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color:
-                    task.status == "completed"
+                    task.status == AppConstants.statusCompletedStor
                             ? const Color(0xFF10B981)
                             : const Color(0xFF6366F1),
                   ),

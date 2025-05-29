@@ -15,7 +15,7 @@ class AppConstants {
   static const String taskNameLabel = "Task Name";
   static const String taskNameHint = "Enter Your Task Name";
   static const String taskDescriptionLabel = "Task description";
-  static const String taskDescriptionHint = "Optimize the user interface for our mobile app, ensuring a seamless and delightful user experience. Consider incorporating user feedback and modern design trends to enhance usability and aesthetics.";
+  static const String taskDescriptionHint = "Enter the descriptions";
   static const String startDateLabel = "Start Date";
   static const String endDateLabel = "End Date";
   static const String createTaskButtonText = "Create new tasks";
